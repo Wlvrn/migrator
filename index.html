@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap 3→5 Migrator</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="css/diff.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Bootstrap 3 → 5 Migrator</h1>
+            <p class="subtitle">Intelligently refactor Bootstrap 3 code to Bootstrap 5</p>
+            <div class="header-actions">
+                <select id="exampleSnippets" class="select-control">
+                    <option value="">Load Example...</option>
+                    <option value="grid">Grid System</option>
+                    <option value="form">Form Controls</option>
+                    <option value="panel">Panel to Card</option>
+                    <option value="buttons">Buttons & Utilities</option>
+                    <option value="complex">Complex Layout</option>
+                </select>
+                <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                <button id="helpBtn" class="btn btn-secondary">Help</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="section-header">
+                    <h2>Input: Bootstrap 3 HTML</h2>
+                    <button id="formatInputBtn" class="btn btn-sm">Format HTML</button>
+                </div>
+                <textarea
+                    id="inputArea"
+                    class="code-editor"
+                    placeholder="Paste your Bootstrap 3 HTML code here...&#10;&#10;Example:&#10;<div class=&quot;col-xs-12 col-md-6 pull-right&quot;>&#10;  <div class=&quot;panel panel-default&quot;>&#10;    <div class=&quot;panel-heading&quot;>Title</div>&#10;    <div class=&quot;panel-body&quot;>Content</div>&#10;  </div>&#10;</div>"
+                    spellcheck="false"></textarea>
+                <div class="input-actions">
+                    <button id="migrateBtn" class="btn btn-primary btn-large">
+                        Migrate to Bootstrap 5 →
+                    </button>
+                </div>
+            </section>
+
+            <!-- Output Section -->
+            <section class="output-section" id="outputSection" style="display: none;">
+                <div class="section-header">
+                    <h2>Output: Bootstrap 5 HTML</h2>
+                    <div class="output-actions-inline">
+                        <button id="copyOutputBtn" class="btn btn-sm">Copy Output</button>
+                        <button id="downloadBtn" class="btn btn-sm">Download HTML</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="sideBySide">Side-by-Side</button>
+                    <button class="tab-btn" data-tab="changes">Changes</button>
+                    <button class="tab-btn" data-tab="output">Output</button>
+                </div>
+
+                <!-- Tab Content: Side-by-Side -->
+                <div class="tab-content active" id="sideBySide">
+                    <div class="diff-container">
+                        <div class="diff-pane">
+                            <h3>Bootstrap 3 (Before)</h3>
+                            <pre id="beforeCode" class="code-display"></pre>
+                        </div>
+                        <div class="diff-pane">
+                            <h3>Bootstrap 5 (After)</h3>
+                            <pre id="afterCode" class="code-display"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Changes -->
+                <div class="tab-content" id="changes">
+                    <div class="changes-summary" id="changesSummary"></div>
+                    <div class="changes-list" id="changesList"></div>
+                </div>
+
+                <!-- Tab Content: Output -->
+                <div class="tab-content" id="output">
+                    <textarea
+                        id="outputArea"
+                        class="code-editor"
+                        readonly
+                        spellcheck="false"></textarea>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Bootstrap 3→5 Migrator | <a href="https://github.com" target="_blank">View on GitHub</a> | <a href="#" id="aboutLink">About</a></p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeHelp">&times;</span>
+            <h2>How to Use</h2>
+            <ol>
+                <li><strong>Paste</strong> your Bootstrap 3 HTML code into the input area</li>
+                <li><strong>Click</strong> "Migrate to Bootstrap 5" button</li>
+                <li><strong>Review</strong> the changes in the three tabs:
+                    <ul>
+                        <li><strong>Side-by-Side:</strong> Visual diff showing before/after</li>
+                        <li><strong>Changes:</strong> Detailed list of all transformations</li>
+                        <li><strong>Output:</strong> Clean Bootstrap 5 code ready to copy</li>
+                    </ul>
+                </li>
+                <li><strong>Copy</strong> the output or download as an HTML file</li>
+            </ol>
+
+            <h3>Supported Transformations</h3>
+            <ul>
+                <li><strong>Grid System:</strong> col-xs-*, offset classes, col-xxl-* support</li>
+                <li><strong>Utilities:</strong> pull-right → float-end, hidden-* → d-none, etc.</li>
+                <li><strong>Components:</strong> Panels → Cards, Wells → Cards, Labels → Badges</li>
+                <li><strong>Forms:</strong> form-group → mb-3, control-label → form-label</li>
+                <li><strong>Buttons:</strong> btn-default → btn-secondary, btn-xs → btn-sm</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li>HTML only (JavaScript migrations not included)</li>
+                <li>Standard Bootstrap classes only</li>
+                <li>Custom classes are preserved but not transformed</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/core/parser.js"></script>
+    <script src="js/rules/classMap.js"></script>
+    <script src="js/rules/gridRules.js"></script>
+    <script src="js/rules/utilityRules.js"></script>
+    <script src="js/rules/componentRules.js"></script>
+    <script src="js/rules/formRules.js"></script>
+    <script src="js/core/migrator.js"></script>
+    <script src="js/core/differ.js"></script>
+    <script src="js/ui/editor.js"></script>
+    <script src="js/ui/toast.js"></script>
+    <script src="js/utils/clipboard.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
