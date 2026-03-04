@@ -6,11 +6,13 @@ class Migrator {
     constructor() {
         // Initialize rule sets in priority order
         this.rules = [
-            new GridRules(),        // Priority 1
-            new UtilityRules(),     // Priority 2
-            new ComponentRules(),   // Priority 3
-            new FormRules(),        // Priority 4
-            new ClassMapRules()     // Priority 5 (catch-all)
+            new DataAttributeRules(), // Priority 0 — rename data-* attrs first
+            new GridRules(),           // Priority 1
+            new UtilityRules(),        // Priority 2
+            new ComponentRules(),      // Priority 3
+            new FormRules(),           // Priority 4
+            new ClassMapRules(),       // Priority 5 (catch-all class mappings)
+            new NavbarRules()          // Priority 6 — structural DOM changes last
         ];
 
         this.changes = [];
