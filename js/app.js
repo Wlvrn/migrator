@@ -89,8 +89,8 @@ class App {
                 const diff = differ.generateDiff();
 
                 // Update diff views
-                document.getElementById('beforeCode').textContent = diff.before;
-                document.getElementById('afterCode').textContent = diff.after;
+                document.getElementById('beforeCode').innerHTML = diff.before;
+                document.getElementById('afterCode').innerHTML = diff.after;
 
                 // Update changes view
                 this.renderChanges(this.currentResult.changes, this.currentResult.stats);

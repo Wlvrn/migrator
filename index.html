@@ -21,6 +21,8 @@
                     <option value="panel">Panel to Card</option>
                     <option value="buttons">Buttons & Utilities</option>
                     <option value="complex">Complex Layout</option>
+                    <option value="navbar">Navbar</option>
+                    <option value="dropdown">Dropdown Menu</option>
                 </select>
                 <button id="clearBtn" class="btn btn-secondary">Clear</button>
                 <button id="helpBtn" class="btn btn-secondary">Help</button>
@@ -122,6 +124,8 @@
 
             <h3>Supported Transformations</h3>
             <ul>
+                <li><strong>Data Attributes:</strong> data-toggle → data-bs-toggle, data-target → data-bs-target, data-dismiss → data-bs-dismiss, and all other data-* renames</li>
+                <li><strong>Navbar:</strong> navbar-header removal, icon-bar → navbar-toggler-icon, caret removal, divider → dropdown-divider, dropdown-header li → h6</li>
                 <li><strong>Grid System:</strong> col-xs-*, offset classes, col-xxl-* support</li>
                 <li><strong>Utilities:</strong> pull-right → float-end, hidden-* → d-none, etc.</li>
                 <li><strong>Components:</strong> Panels → Cards, Wells → Cards, Labels → Badges</li>
@@ -134,17 +138,20 @@
                 <li>HTML only (JavaScript migrations not included)</li>
                 <li>Standard Bootstrap classes only</li>
                 <li>Custom classes are preserved but not transformed</li>
+                <li>Razor/VB syntax (@If, @Html, etc.) should be stripped before migrating — migrate the HTML fragments only</li>
             </ul>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="js/core/parser.js"></script>
+    <script src="js/rules/dataAttributeRules.js"></script>
     <script src="js/rules/classMap.js"></script>
     <script src="js/rules/gridRules.js"></script>
     <script src="js/rules/utilityRules.js"></script>
     <script src="js/rules/componentRules.js"></script>
     <script src="js/rules/formRules.js"></script>
+    <script src="js/rules/navbarRules.js"></script>
     <script src="js/core/migrator.js"></script>
     <script src="js/core/differ.js"></script>
     <script src="js/ui/editor.js"></script>
