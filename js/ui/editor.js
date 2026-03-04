@@ -85,7 +85,47 @@ class Editor {
       </div>
     </div>
   </div>
-</div>`
+</div>`,
+
+            navbar: `<div class="navbar navbar-default navbar-static-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">My App</a>
+    </div>
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/home">Home</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/login" data-toggle="modal" data-target="#loginModal">Log In</a></li>
+      </ul>
+    </div>
+  </div>
+</div>`,
+
+            dropdown: `<ul class="nav navbar-nav">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      Management <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+      <li class="dropdown-header">Admin</li>
+      <li><a href="/users">User Management</a></li>
+      <li><a href="/settings">Settings</a></li>
+      <li class="divider"></li>
+      <li class="dropdown-header">Reports</li>
+      <li><a href="/reports">View Reports</a></li>
+      <li role="separator" class="divider"></li>
+      <li><a href="/export" data-toggle="tooltip" data-placement="right" data-title="Export data">Export</a></li>
+    </ul>
+  </li>
+</ul>`
         };
     }
 

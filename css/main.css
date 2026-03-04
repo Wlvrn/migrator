@@ -98,6 +98,12 @@ body {
     gap: 8px;
 }
 
+.input-header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 /* Buttons */
 .btn {
     padding: 10px 20px;

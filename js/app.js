@@ -6,6 +6,7 @@ class App {
         this.migrator = new Migrator();
         this.editor = new Editor();
         this.currentResult = null;
+        this.uploadedFilename = null;
 
         this.initializeElements();
         this.attachEventListeners();
@@ -24,6 +25,8 @@ class App {
         this.helpBtn = document.getElementById('helpBtn');
         this.helpModal = document.getElementById('helpModal');
         this.closeHelp = document.getElementById('closeHelp');
+        this.uploadBtn = document.getElementById('uploadBtn');
+        this.fileInput = document.getElementById('fileInput');
     }
 
     attachEventListeners() {
@@ -35,6 +38,8 @@ class App {
         this.downloadBtn.addEventListener('click', () => this.handleDownload());
         this.helpBtn.addEventListener('click', () => this.showHelp());
         this.closeHelp.addEventListener('click', () => this.hideHelp());
+        this.uploadBtn.addEventListener('click', () => this.fileInput.click());
+        this.fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
 
         // Tab switching
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -206,6 +211,7 @@ class App {
         this.outputArea.value = '';
         this.outputSection.style.display = 'none';
         this.currentResult = null;
+        this.uploadedFilename = null;
         this.exampleSnippets.value = '';
         Toast.info('Cleared all content');
     }
@@ -228,18 +234,67 @@ class App {
         Toast.success('HTML formatted');
     }
 
+    handleFileUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const allowed = /\.(html|htm|vbhtml|cshtml|razor)$/i;
+        if (!allowed.test(file.name)) {
+            Toast.error('Unsupported file type. Please upload .html, .htm, .vbhtml, .cshtml, or .razor files.');
+            this.fileInput.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+            let content = event.target.result;
+            const needsStrip = RazorStripper.needsStripping(file.name);
+
+            if (needsStrip) {
+                const { stripped, removedCount } = RazorStripper.strip(content);
+                content = stripped;
+
+                if (removedCount > 0) {
+                    Toast.warning(
+                        `Razor/VB syntax stripped from "${file.name}" — review HTML before migrating`
+                    );
+                }
+            }
+
+            this.inputArea.value = content;
+            this.uploadedFilename = file.name;
+            this.fileInput.value = '';
+
+            if (!needsStrip) {
+                Toast.info(`Loaded "${file.name}"`);
+            }
+        };
+
+        reader.onerror = () => {
+            Toast.error(`Failed to read "${file.name}"`);
+            this.fileInput.value = '';
+        };
+
+        reader.readAsText(file);
+    }
+
     handleDownload() {
         if (!this.currentResult) return;
+
+        const downloadName = this.uploadedFilename
+            ? RazorStripper.deriveDownloadName(this.uploadedFilename)
+            : 'bootstrap5-migrated.html';
 
         const blob = new Blob([this.currentResult.html], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'bootstrap5-migrated.html';
+        a.download = downloadName;
         a.click();
         URL.revokeObjectURL(url);
 
-        Toast.success('Downloaded HTML file');
+        Toast.success(`Downloaded "${downloadName}"`);
     }
 
     handleTabSwitch(e) {
