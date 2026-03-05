@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/editor.css">
     <link rel="stylesheet" href="css/diff.css">
+    <link rel="stylesheet" href="css/analysis.css">
 </head>
 <body>
     <div class="container">
         <header class="header">
             <h1>Bootstrap 3 → 5 Migrator</h1>
-            <p class="subtitle">Intelligently refactor Bootstrap 3 code to Bootstrap 5</p>
+            <p class="subtitle">Analyse issues by severity, then auto-migrate Bootstrap 3 code to Bootstrap 5</p>
             <div class="header-actions">
                 <select id="exampleSnippets" class="select-control">
                     <option value="">Load Example...</option>
@@ -43,10 +44,13 @@
                 <textarea
                     id="inputArea"
                     class="code-editor"
-                    placeholder="Paste your Bootstrap 3 HTML code here...&#10;&#10;Example:&#10;<div class=&quot;col-xs-12 col-md-6 pull-right&quot;>&#10;  <div class=&quot;panel panel-default&quot;>&#10;    <div class=&quot;panel-heading&quot;>Title</div>&#10;    <div class=&quot;panel-body&quot;>Content</div>&#10;  </div>&#10;</div>"
+                    placeholder="Paste Bootstrap 3 HTML here — or load an example above.&#10;&#10;Click Analyse to see a severity report, or Migrate to auto-fix what can be fixed."
                     spellcheck="false"></textarea>
-                <div class="input-actions">
-                    <button id="migrateBtn" class="btn btn-primary btn-large">
+                <div class="input-actions action-row">
+                    <button id="analyseBtn" class="btn btn-analyse">
+                        🔍 Analyse
+                    </button>
+                    <button id="migrateBtn" class="btn btn-primary btn-migrate">
                         Migrate to Bootstrap 5 →
                     </button>
                 </div>
@@ -55,7 +59,7 @@
             <!-- Output Section -->
             <section class="output-section" id="outputSection" style="display: none;">
                 <div class="section-header">
-                    <h2>Output: Bootstrap 5 HTML</h2>
+                    <h2>Output</h2>
                     <div class="output-actions-inline">
                         <button id="copyOutputBtn" class="btn btn-sm">Copy Output</button>
                         <button id="downloadBtn" class="btn btn-sm">Download HTML</button>
@@ -65,11 +69,12 @@
                 <!-- Tabs -->
                 <div class="tabs">
                     <button class="tab-btn active" data-tab="sideBySide">Side-by-Side</button>
+                    <button class="tab-btn" data-tab="analysis">Analysis</button>
                     <button class="tab-btn" data-tab="changes">Changes</button>
                     <button class="tab-btn" data-tab="output">Output</button>
                 </div>
 
-                <!-- Tab Content: Side-by-Side -->
+                <!-- Tab: Side-by-Side -->
                 <div class="tab-content active" id="sideBySide">
                     <div class="diff-container">
                         <div class="diff-pane">
@@ -83,29 +88,32 @@
                     </div>
                 </div>
 
-                <!-- Tab Content: Changes -->
+                <!-- Tab: Analysis -->
+                <div class="tab-content" id="analysis">
+                    <div id="analysisContent">
+                        <p class="analysis-placeholder">Click <strong>🔍 Analyse</strong> to scan your HTML for Bootstrap 3 issues, or run <strong>Migrate</strong> first to see a post-migration residual report.</p>
+                    </div>
+                </div>
+
+                <!-- Tab: Changes -->
                 <div class="tab-content" id="changes">
                     <div class="changes-summary" id="changesSummary"></div>
                     <div class="changes-list" id="changesList"></div>
                 </div>
 
-                <!-- Tab Content: Output -->
+                <!-- Tab: Output -->
                 <div class="tab-content" id="output">
-                    <textarea
-                        id="outputArea"
-                        class="code-editor"
-                        readonly
-                        spellcheck="false"></textarea>
+                    <textarea id="outputArea" class="code-editor" readonly spellcheck="false"></textarea>
                 </div>
             </section>
         </main>
 
         <footer class="footer">
-            <p>Bootstrap 3→5 Migrator | <a href="https://github.com" target="_blank">View on GitHub</a> | <a href="#" id="aboutLink">About</a></p>
+            <p>Bootstrap 3→5 Migrator | <a href="#" id="aboutLink">About</a></p>
         </footer>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div id="toast" class="toast"></div>
 
     <!-- Help Modal -->
@@ -113,42 +121,55 @@
         <div class="modal-content">
             <span class="modal-close" id="closeHelp">&times;</span>
             <h2>How to Use</h2>
+
+            <h3>Two modes</h3>
+            <ul>
+                <li><strong>🔍 Analyse</strong> — scans your HTML and produces a severity-tiered report (CRITICAL / HIGH / MEDIUM / LOW / MANUAL REVIEW) without modifying anything. Use this first to understand scope.</li>
+                <li><strong>Migrate →</strong> — applies all auto-fixable transformations, then shows a post-migration residual analysis of anything still needing manual attention.</li>
+            </ul>
+
+            <h3>Workflow</h3>
             <ol>
-                <li><strong>Paste</strong> your Bootstrap 3 HTML code into the input area</li>
-                <li><strong>Click</strong> "Migrate to Bootstrap 5" button</li>
-                <li><strong>Review</strong> the changes in the three tabs:
-                    <ul>
-                        <li><strong>Side-by-Side:</strong> Visual diff showing before/after</li>
-                        <li><strong>Changes:</strong> Detailed list of all transformations</li>
-                        <li><strong>Output:</strong> Clean Bootstrap 5 code ready to copy</li>
-                    </ul>
-                </li>
-                <li><strong>Copy</strong> the output or download as an HTML file</li>
+                <li>Paste Bootstrap 3 HTML (or upload a .vbhtml / .cshtml file)</li>
+                <li>Click <strong>Analyse</strong> — review the Analysis tab for severity breakdown</li>
+                <li>Click <strong>Migrate</strong> — auto-fixes are applied; residual manual items appear in Analysis</li>
+                <li>Copy output or download the migrated file</li>
             </ol>
 
-            <h3>Supported Transformations</h3>
+            <h3>What gets auto-fixed</h3>
             <ul>
-                <li><strong>Data Attributes:</strong> data-toggle → data-bs-toggle, data-target → data-bs-target, data-dismiss → data-bs-dismiss, and all other data-* renames</li>
-                <li><strong>Navbar:</strong> navbar-header removal, icon-bar → navbar-toggler-icon, caret removal, divider → dropdown-divider, dropdown-header li → h6</li>
-                <li><strong>Grid System:</strong> col-xs-*, offset classes, col-xxl-* support</li>
-                <li><strong>Utilities:</strong> pull-right → float-end, hidden-* → d-none, etc.</li>
-                <li><strong>Components:</strong> Panels → Cards, Wells → Cards, Labels → Badges</li>
-                <li><strong>Forms:</strong> form-group → mb-3, control-label → form-label</li>
-                <li><strong>Buttons:</strong> btn-default → btn-secondary, btn-xs → btn-sm</li>
+                <li>data-toggle/dismiss/target → data-bs-* renames</li>
+                <li>Grid: col-xs-* → col-*, offset renames</li>
+                <li>Utilities: pull-*, text-*, hidden-*, visible-*</li>
+                <li>Components: panels → cards, wells → cards, labels → badges</li>
+                <li>Forms: form-group, control-label, help-block, validation states</li>
+                <li>Navbar: icon-bar, navbar-header, caret removal, nav-item/nav-link injection, navbar-expand-lg</li>
+                <li>Alert dismiss: .close → .btn-close</li>
+            </ul>
+
+            <h3>What needs manual review</h3>
+            <ul>
+                <li>Dynamic class construction in backend strings (<code>"btn btn-" + type</code>)</li>
+                <li>jQuery plugin calls (.modal(), .popover(), .collapse())</li>
+                <li>Razor HTML helper attributes in .vbhtml/.cshtml</li>
+                <li>bootstrap-theme.css removal</li>
+                <li>bootstrap.js → bootstrap.bundle.min.js swap</li>
+                <li>BundleConfig.cs: ScriptBundle → Bundle for Bootstrap JS</li>
             </ul>
 
             <h3>Limitations</h3>
             <ul>
-                <li>HTML only (JavaScript migrations not included)</li>
-                <li>Standard Bootstrap classes only</li>
-                <li>Custom classes are preserved but not transformed</li>
-                <li>Razor/VB syntax (@If, @Html, etc.) should be stripped before migrating — migrate the HTML fragments only</li>
+                <li>Strip Razor syntax before migrating — use the Upload File button for .vbhtml/.cshtml (auto-stripped)</li>
+                <li>BundleConfig.cs and backend C#/VB string HTML cannot be processed here — use the Claude Code prompt in the repo</li>
             </ul>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Core -->
     <script src="js/core/parser.js"></script>
+    <script src="js/core/analyser.js"></script>
+
+    <!-- Rules -->
     <script src="js/rules/dataAttributeRules.js"></script>
     <script src="js/rules/classMap.js"></script>
     <script src="js/rules/gridRules.js"></script>
@@ -156,12 +177,20 @@
     <script src="js/rules/componentRules.js"></script>
     <script src="js/rules/formRules.js"></script>
     <script src="js/rules/navbarRules.js"></script>
+
+    <!-- Orchestration -->
     <script src="js/core/migrator.js"></script>
     <script src="js/core/differ.js"></script>
+
+    <!-- UI -->
     <script src="js/ui/editor.js"></script>
     <script src="js/ui/toast.js"></script>
+
+    <!-- Utils -->
     <script src="js/utils/clipboard.js"></script>
     <script src="js/utils/razorStripper.js"></script>
+
+    <!-- App init -->
     <script src="js/app.js"></script>
 </body>
 </html>
